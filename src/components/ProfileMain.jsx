@@ -1,8 +1,12 @@
 import { ButtonSimpanProfile, ButtonHapusAkun } from "./Button";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers } from "../store/redux/actions";
 import { updateUser, deleteUser } from "../services/api";
 
 const ProfileMain = () => {
+    const dispatch = useDispatch();
+    const users = useSelector((state) => state.users);
     const [user, setUser] = useState({
         namalengkap: "",
         email: "",
@@ -18,20 +22,28 @@ const ProfileMain = () => {
     const [focusField, setFocusField] = useState("");
 
     useEffect(() => {
-        const data = JSON.parse(sessionStorage.getItem("currentUser"));
-        if (data) {
-            setUser({
-                namalengkap: data.namalengkap || "",
-                email: data.email || "",
-                noHp: data.noHp || ""
-            });
-            setEditUser({
-                namalengkap: data.namalengkap || "",
-                email: data.email || "",
-                noHp: data.noHp || ""
-            });
+        dispatch(fetchUsers());
+    }, [dispatch]);
+
+    useEffect(() => {
+        
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        if (currentUser && users.length > 0) {
+            const userData = users.find(u => u.id === currentUser.id);
+            if (userData) {
+                setUser({
+                    namalengkap: userData.namalengkap || "",
+                    email: userData.email || "",
+                    noHp: userData.noHp || ""
+                });
+                setEditUser({
+                    namalengkap: userData.namalengkap || "",
+                    email: userData.email || "",
+                    noHp: userData.noHp || ""
+                });
+            }
         }
-    }, []);
+    }, [users]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -48,6 +60,7 @@ const ProfileMain = () => {
             setEditUser(updated);
             setPopupMsg("Profil berhasil diperbarui!");
             setShowPopup(true);
+            
         } catch {
             setPopupMsg("Gagal memperbarui profil!");
             setShowPopup(true);
@@ -185,6 +198,14 @@ const ProfileMain = () => {
                 </div>
 
             </form>
+
+            {/* <ul>
+                {users.map(user => (
+                    <li key={user.id}>
+                        {user.namalengkap} - {user.email} - {user.noHp} - {user.katasandi} - {user.jeniskelamin} - {user.id}
+                    </li>
+                ))}
+            </ul> */}
         </div>
     )
 }   
