@@ -20,7 +20,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem('currentUser');
-    window.location.reload();
+    window.location.href = "/";
   };
 
   return (

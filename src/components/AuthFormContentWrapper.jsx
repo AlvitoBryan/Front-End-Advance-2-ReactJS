@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { registerUser, getUsers } from '../services/api';
+import { useDispatch, useSelector } from "react-redux";
+import { addUser, fetchUsers } from '../store/redux/actions';
 
 const AuthFormContentWrapper = ({ inputs, buttons, onSubmitForm, mode = "register" }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.users);
 
   const handleDaftar = async (e) => {
     e.preventDefault();
@@ -24,10 +27,9 @@ const AuthFormContentWrapper = ({ inputs, buttons, onSubmitForm, mode = "registe
     };
 
     try {
-      // Kirim data ke API
-      const user = await registerUser(dataBaru);
-
-      sessionStorage.setItem("currentUser", JSON.stringify(user));
+      dispatch(addUser(dataBaru));
+      const userBaru = users.find(u => u.email === dataBaru.email);
+      sessionStorage.setItem("currentUser", JSON.stringify(userBaru));
       window.location.href = "/";
     } catch {
       setPopupMsg("Gagal mendaftar user! Pastikan email belum digunakan.");
@@ -40,7 +42,7 @@ const AuthFormContentWrapper = ({ inputs, buttons, onSubmitForm, mode = "registe
     const email = e.target.email.value;
     const password = e.target.password.value;
     try {
-      const users = await getUsers();
+      dispatch(fetchUsers());
       const user = users.find(
         (u) => u.email === email && u.katasandi === password
       );

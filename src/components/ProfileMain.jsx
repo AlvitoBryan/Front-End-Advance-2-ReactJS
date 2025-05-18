@@ -1,8 +1,8 @@
 import { ButtonSimpanProfile, ButtonHapusAkun } from "./Button";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers } from "../store/redux/actions";
-import { updateUser, deleteUser } from "../services/api";
+import { fetchUsers, updateUser as updateUserAction, deleteUser as deleteUserAction } from "../store/redux/actions";
+import ListView from "./ListView";
 
 const ProfileMain = () => {
     const dispatch = useDispatch();
@@ -26,7 +26,6 @@ const ProfileMain = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        
         const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
         if (currentUser && users.length > 0) {
             const userData = users.find(u => u.id === currentUser.id);
@@ -54,13 +53,9 @@ const ProfileMain = () => {
         e.preventDefault();
         try {
             const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
-            const updated = await updateUser(currentUser.id, editUser);
-            sessionStorage.setItem("currentUser", JSON.stringify(updated));
-            setUser(updated);
-            setEditUser(updated);
+            dispatch(updateUserAction(currentUser.id, editUser));
             setPopupMsg("Profil berhasil diperbarui!");
             setShowPopup(true);
-            
         } catch {
             setPopupMsg("Gagal memperbarui profil!");
             setShowPopup(true);
@@ -70,7 +65,7 @@ const ProfileMain = () => {
     const handleHapusAkun = async () => {
         try {
             const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
-            await deleteUser(currentUser.id);
+            dispatch(deleteUserAction(currentUser.id));
             sessionStorage.removeItem("currentUser");
             window.location.href = "/";
         } catch {
@@ -199,13 +194,7 @@ const ProfileMain = () => {
 
             </form>
 
-            {/* <ul>
-                {users.map(user => (
-                    <li key={user.id}>
-                        {user.namalengkap} - {user.email} - {user.noHp} - {user.katasandi} - {user.jeniskelamin} - {user.id}
-                    </li>
-                ))}
-            </ul> */}
+            <ListView/>
         </div>
     )
 }   

@@ -21,7 +21,7 @@ export const addUser = (userData) => async (dispatch) => {
     const newUser = await registerUser(userData);
     dispatch({ type: 'ADD_USER', payload: newUser });
   } catch (error) {
-    // Optional: handle error
+
     alert(error.message);
   }
 };
@@ -31,7 +31,7 @@ export const updateUser = (id, userData) => async (dispatch) => {
     const updatedUser = await apiUpdateUser(id, userData);
     dispatch({ type: 'UPDATE_USER', payload: updatedUser });
   } catch (error) {
-    // Optional: handle error
+
     alert(error.message);
   }
 };
@@ -41,7 +41,7 @@ export const deleteUser = (id) => async (dispatch) => {
     await apiDeleteUser(id);
     dispatch({ type: 'DELETE_USER', payload: id });
   } catch (error) {
-    // Optional: handle error
+
     alert(error.message);
   }
 }; 
